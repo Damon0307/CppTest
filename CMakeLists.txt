@@ -22,6 +22,7 @@ link_directories(lib)
 add_executable(a.out ${SOURCES})
 
 # 如果有库依赖，可以在这里链接
+target_link_libraries(a.out  pthread)
 #target_link_libraries(a.out PRIVATE hv)
 
 # # 安装规则
