@@ -68,9 +68,18 @@ int main() {
     
     
     WTimer wtimer;
-    wtimer.SetTimeout(1000, [](int a ,int b) { std::cout << "Hello a + b --> "<<a+b << std::endl; },3,2);
+    wtimer.SetTimeout(3000, [](int a ,int b) { std::cout << "Hello a + b --> "<<a+b << std::endl;
+        fflush(stdout);
+    },3,2);
 
     cout<<"main end"<<endl;
+
+
+    while (1)
+    {
+        this_thread::sleep_for(chrono::seconds(1));
+    }
+    
 
  
     // TestCB testCB;
@@ -83,3 +92,5 @@ int main() {
 
     return 0;
 }
+//! 从链接中找找原因
+//! https://share.aichatos58.com/#/share/b89a94cf6126470a931ec594f9476cff
