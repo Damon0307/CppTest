@@ -31,38 +31,44 @@ public:
 template <typename CB,typename... Args>
  void SetTimeout(int ms, CB&& cb, Args&&... args)
     {
-        std::thread([&](CB&& cb,Args&&... args)
-        {
-            std::chrono::milliseconds dura(ms);
-            std::this_thread::sleep_for(dura);
-            if (m_bRunning)
-            {
-                cb(std::forward<Args>(args)...);
-            }
-         },std::forward<CB>(cb),std::forward<Args>(args)...).detach();   
+         std::thread([this](int ms,CB&& cb,Args&&... args)
+         {
+             std::chrono::milliseconds dura(ms);
+             std::this_thread::sleep_for(dura);
+             if (m_bRunning)
+             {
+                 cb(std::forward<Args>(args)...);
+             }
+          },ms,std::forward<CB>(cb),std::forward<Args>(args)...).detach();   
+
     }
     
 template <typename CB,typename... Args>
 void SetTimerInterval(int ms,CB&& cb,Args&&... args)
     {
-        std::thread([&](CB&&cb,Args&&... args){
+        std::thread([this](int ms,CB&& cb,Args&&... args)
+        {
             while (m_bRunning)
             {
                 std::chrono::milliseconds dura(ms);
                 std::this_thread::sleep_for(dura);
-                if (m_bRunning)
-                {
-                    cb(std::forward<Args>(args)...);
-                }
+            
+                    if (m_bRunning)
+                            {
+                                cb(std::forward<Args>(args)...);
+                            }
             }
-        },std::forward<CB>(cb),std::forward<Args>(args)...).detach();
+        },ms,std::forward<CB>(cb),std::forward<Args>(args)...).detach();
     }
+
+    void Stop()
+    {
+        m_bRunning = false;
+    }
+
     private:
     //原子变量
     std::atomic<bool> m_bRunning;
-
-
-
 };
 /**
  * 首先要搞清楚，timer 是定时器，不是eventloop 。timer 的功能只需要周期性执行某个任务就可以了

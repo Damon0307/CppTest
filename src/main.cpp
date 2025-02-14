@@ -37,7 +37,7 @@ void PowerPrint(Args... args)
 }
 //函数模板+不定参数
  template <typename CB,typename... Args>
- 
+
  void RunyourCB(CB&& cb,Args&&... args)
  {
         std::cout<<"函数模板+不定参数 Run your cb"<<std::endl;
@@ -68,19 +68,21 @@ int main() {
     
     
     WTimer wtimer;
-    wtimer.SetTimeout(3000, [](int a ,int b) { std::cout << "Hello a + b --> "<<a+b << std::endl;
+    wtimer.SetTimeout(1000, [](int a,int b) { std::cout << "Hello a + b --> "<<a+b<< std::endl;
         fflush(stdout);
-    },3,2);
+    },3,3);
+
+
+    // wtimer.SetTimerInterval(3000, [](int a,int b) { std::cout << "Hello a - b --> "<<a-b<< std::endl;
+    //     fflush(stdout);
+    // },3,3);
 
     cout<<"main end"<<endl;
-
-
+ 
     while (1)
     {
         this_thread::sleep_for(chrono::seconds(1));
     }
-    
-
  
     // TestCB testCB;
     // testCB.run([](int a, int b) { std::cout << a + b << std::endl; }, 1, 2);
@@ -93,4 +95,10 @@ int main() {
     return 0;
 }
 //! 从链接中找找原因
-//! https://share.aichatos58.com/#/share/b89a94cf6126470a931ec594f9476cff
+//!在类的内部使用lambda表达式，需要使用this指针，否则会报错, 目的是为了访问类的成员变量，采用值拷贝的方式，防止在成员函数中启动的
+//!线程访问成员变量时，成员变量已经被析构的情况 ,不能无脑的试用 & 符号，因为可能会导致线程访问的时候，成员变量已经被析构的情况
+/*
+ 
+*/
+
+
