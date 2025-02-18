@@ -70,11 +70,17 @@ void SetTimerInterval(int ms,CB&& cb,Args&&... args)
     //原子变量
     std::atomic<bool> m_bRunning;
 };
-/**
+/**note 
  * 首先要搞清楚，timer 是定时器，不是eventloop 。timer 的功能只需要周期性执行某个任务就可以了
  * 
  * 想把不同的事件都加进去的，是eventloop 的功能，eventloop 需要一个事件列表，当有新的事件加进去的时候，
  * eventloop 应该能够检测到，然后执行相应的任务。
+ * 
+ * eventloop 借用 linux 的 epoll 来实现，这样就可以实现一个高效的事件循环。epoll不仅能监听普通IO
+ * 事件，还能监听定时器事件，这样就可以实现一个高效的事件循环。
+ * 
+ * 使用了epoll就避免了使用轮询的方式来检测事件，这样就可以避免浪费CPU资源。
+ *  
  * 
  */
 
