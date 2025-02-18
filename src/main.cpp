@@ -44,18 +44,13 @@ void PowerPrint(Args... args)
         cb(std::forward<Args>(args)...);//这里使用完美转发来确保参数的类型不变
  }
 
-// class TestCB {
-//     public:
-//     template <typename Func, typename... Args>
-//   void run(Func&& func, Args&&... args) {
-//     std::this_thread::sleep_for(chrono::seconds(5));
-//       func(std::forward<Args>(args)...);
-// }
-// };
+ 
 
 int main() {
     // 标准的C++ main函数模版
     std::cout << "道阻且长，行之将至。" << std::endl;
+
+    std::cout<<"执行回调时候除了普通的thread,我们还可以使用更好地方法  async"<<std::endl;
 
     //调用函数模板
 
@@ -77,13 +72,7 @@ int main() {
         std::cout<<"tmp_a+tmp_b="<<tmp_a+tmp_b<<std::endl;
     });
     
-    
-    // TestCB testCB;
-    // testCB.run([](int a, int b) { std::cout << a + b << std::endl; }, 1, 2);
-  
-    // std::function<void(int, int)> func = [](int a, int b) { std::cout <<"魔法师："<<a + b << std::endl; };
-
-    // testCB.run(func, 4, 2);
+ 
 
 
     return 0;
