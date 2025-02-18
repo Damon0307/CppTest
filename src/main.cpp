@@ -68,16 +68,16 @@ int main() {
     
     
     WTimer wtimer;
-    // wtimer.SetTimeout(1000, [](int a,int b) { std::cout << "Hello a + b --> "<<a+b<< std::endl;
-    //     fflush(stdout);
-    // },3,3);
-    wtimer.SetTimerInterval(1000, []() { std::cout << "Hello!"<< std::endl;
-        fflush(stdout);
-    });
-
-    wtimer.SetTimerInterval(3000, [](int a,int b) { std::cout << "Hello a - b --> "<<a-b<< std::endl;
+    wtimer.SetTimeout(1000, [](int a,int b) { std::cout << "Hello a + b --> "<<a+b<< std::endl;
         fflush(stdout);
     },3,3);
+    // wtimer.SetTimerInterval(1000, []() { std::cout << "Hello!"<< std::endl;
+    //     fflush(stdout);
+    // });
+
+    // wtimer.SetTimerInterval(3000, [](int a,int b) { std::cout << "Hello a - b --> "<<a-b<< std::endl;
+    //     fflush(stdout);
+    // },3,3);
 
     cout<<"main end"<<endl;
     

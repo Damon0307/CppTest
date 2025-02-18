@@ -10,6 +10,7 @@
 #include <chrono>
 #include <atomic>
 #include <iostream>
+#include <future>
 
 using namespace std;
 
@@ -27,21 +28,39 @@ public:
         m_bRunning = false;
     }
 
-
 template <typename CB,typename... Args>
- void SetTimeout(int ms, CB&& cb, Args&&... args)
+void SetTimeout(int ms, CB&& cb, Args&&... args)
+{
+    //使用async
+    std::async(std::launch::async,[this](int ms,CB&& cb,Args&&... args)
     {
-         std::thread([this](int ms,CB&& cb,Args&&... args)
-         {
-             std::chrono::milliseconds dura(ms);
-             std::this_thread::sleep_for(dura);
-             if (m_bRunning)
-             {
-                 cb(std::forward<Args>(args)...);
-             }
-          },ms,std::forward<CB>(cb),std::forward<Args>(args)...).detach();   
+        std::chrono::milliseconds dura(ms);
+        std::this_thread::sleep_for(dura);
+        if (m_bRunning)
+        {
+            cb(std::forward<Args>(args)...);
+        }
+    },ms,std::forward<CB>(cb),std::forward<Args>(args)...);
+}
 
-    }
+
+
+
+
+// template <typename CB,typename... Args>
+//  void SetTimeout(int ms, CB&& cb, Args&&... args)
+//     {
+//          std::thread([this](int ms,CB&& cb,Args&&... args)
+//          {
+//              std::chrono::milliseconds dura(ms);
+//              std::this_thread::sleep_for(dura);
+//              if (m_bRunning)
+//              {
+//                  cb(std::forward<Args>(args)...);
+//              }
+//           },ms,std::forward<CB>(cb),std::forward<Args>(args)...).detach();   
+
+//     }
     
 template <typename CB,typename... Args>
 void SetTimerInterval(int ms,CB&& cb,Args&&... args)
