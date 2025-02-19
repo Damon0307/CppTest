@@ -5,45 +5,50 @@
 #include <thread>
 #include <chrono>
 
+#include "SerialPortClass.h"
+
 using namespace std;    
 
-//模板分为两类，函数模板和类模板
-
-//函数模板
-
-template <typename T>
-
-T add(T a,T b)
+//一个简单的test 类，用来测试，拥有两个成员函数，和一个成员变量
+class Test
 {
-    std::cout<<"函数模板"<<std::endl;
-    std::cout<<" a+b="<<a+b<<std::endl;
-    return a+b;
-}
-//不定参数模板
+public:
+    Test(int i):m_i(i){};
+    void GetMsg(char* data, int len)
+    {
+        std::thread::id this_id = std::this_thread::get_id();
+        std::hash<std::thread::id> hasher;
+        long long int hashed_id = hasher(this_id);
+        std::cout << "Thread ID: " << hashed_id << std::endl;
 
-template<typename... Args>
-void PowerPrint(Args... args)
+        cout<<"in GetMsg "<<endl;
+        //打印接收到的数据
+        for(int i = 0; i < len; i++)
+        {
+            cout<<data[i];
+        }
+        cout<<endl;
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+  
+static void print_static(int i)
 {
-    std::cout<<"不定参数模板"<<std::endl;
-    
-    (std::cout<<...<<args)<<std::endl;
-//挨个处理参数
-    ((std::cout<<"->"<<args<<std::endl),...);
-    //感觉上面的代码有点像 for_each
-
-
+  cout<<"in static print2 "<<i<<endl;
 }
 
+void onRecv(int i)
+{
+    cout<<"in onRecv "<<i<<endl;
+}
+void send_data(int i)
+{
+    cout<<"in send_data "<<i<<endl;
+}
 
-//函数模板+不定参数
- template <typename CB,typename... Args>
- 
- void RunyourCB(CB&& cb,Args&&... args)
- {
-        std::cout<<"函数模板+不定参数 Run your cb"<<std::endl;
-        cb(std::forward<Args>(args)...);//这里使用完美转发来确保参数的类型不变
- }
-
+private:
+    int m_i;
+};
  
 
 int main() {
@@ -52,28 +57,22 @@ int main() {
 
     std::cout<<"执行回调时候除了普通的thread,我们还可以使用更好地方法  async"<<std::endl;
 
-    //调用函数模板
-
-    add(1,2); //可以自己推导类型
-    add<int>(2,2); //也可以指定类型
-    add<double>(2.1,2.2);
-    add<float>(2.1,2); //类型不一样，会自动转换
-    add<string>("hello","world");//字符串也可以相加，因为重载了+运算符
-
-
-    //调用不定参数模板
-    PowerPrint(1,"hello",2.1,"world");
-
-    //调用函数模板+不定参数
-    int tmp_a=1;
-    int tmp_b=2;
-    RunyourCB([tmp_a,tmp_b](){
-        std::cout<<"回调函数"<<std::endl;
-        std::cout<<"tmp_a+tmp_b="<<tmp_a+tmp_b<<std::endl;
-    });
+    auto sp = make_shared<SerialPortClass>();
     
- 
+    
+    auto t = make_shared<Test>(1);
+    //将成员函数GetMsg绑定到onRecv上
+
+    //sp->onRecv = std::bind(&Test::GetMsg, t.get(), std::placeholders::_1, std::placeholders::_2);
+
+    sp->onRecv = [&t](char* data, int len){  
+        t->GetMsg(data, len);
+    };
+
+    sp->StartRecv();
 
 
     return 0;
 }
+
+//
