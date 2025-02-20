@@ -22,7 +22,8 @@ int thread_func(int *i)
     std::hash<std::thread::id> hasher;
     long long int hashed_id = hasher(this_id);
     std::cout << " thread_func thread ID: " << static_cast<unsigned long long>(hashed_id) << std::endl;
-    return *i;
+    //return *i;
+    return 99;
 }
 
 int main()
@@ -35,32 +36,10 @@ int main()
     int i = 0;
     std::future<int> result = std::async(std::launch::async, thread_func, &i);
 
-    while (1)
-    {
+    cout<<"Main thread ID: do someing else"<<std::this_thread::get_id()<<endl;
+    int  res = result.get();
+    cout << "result: " << res << endl;
 
-        auto status = result.wait_for(std::chrono::milliseconds(100));
-        if (status == std::future_status::ready)
-        {
-            cout << "result is ready" << endl;
-            int res = result.get();
-            cout << "result: " << res << endl;
-            break;
-        }
-        else
-        {
-            cout << "result is not ready" << endl;
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-    if (result.valid())
-    {
-        cout << "result is valid" << endl;
-    }
-    else
-    { // 上面已经get过了，这里再次get()会有异常
-        cout << "result is invalid" << endl;
-    }
 
     return 0;
 }
