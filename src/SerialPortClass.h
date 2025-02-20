@@ -65,7 +65,7 @@ std::function<void(char*, int)> onRecv;
             //模拟串口接收数据
             ReceiveData(data, length);
           
-            std::this_thread::sleep_for(std::chrono::seconds(3));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     }
 
